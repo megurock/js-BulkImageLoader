@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta>
+        <title>BulkLoader Example</title>
+        <style>
+            html {
+                height: 100%;
+            }
+            body {
+                background-color: #ccc;
+                height: 100%;
+                padding: 10px;
+            }
+            #stats {
+                border: 10px solid white;
+                width: 260px;
+                padding: 10px;
+                margin: 0;
+                background-color: #ddd;
+                overflow: scroll;
+                list-style: none;
+                color: #666;
+                font-size: .8em;
+                float: left;
+            }
+            #dogs  {
+                padding: 0;
+                margin: 0 0 0 310px;
+                list-style: none;
+                width: 800px;
+            }
+            #dogs li {
+                float: left;
+                width: 240px;
+                height: 180px;
+                background: black url(img/ajax-loader.gif) 50% 50% no-repeat;
+                border: 5px solid white;
+                margin: 0 5px 10px 5px;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <ul id="stats"></ul>
+        <ul id="dogs">
+            <li id="sample_01"></li>
+            <li id="sample_02"></li>
+            <li id="sample_03"></li>
+            <li id="sample_04"></li>
+            <li id="sample_05"></li>
+            <li id="sample_06"></li>
+            <li id="sample_07"></li>
+            <li id="sample_08"></li>
+            <li id="sample_09"></li>
+            <!--<li id="sample_error"></li>-->
+        </ul>
+    
+    
+
+        <script src="../src/bulkImageLoader.js"></script>
+        <script>
+            (function() {   
+
+                // helper function
+                var stats = document.getElementById('stats');
+                var dump = function(text) {
+                    var li = document.createElement('li');
+                    li.appendChild(document.createTextNode(text));
+                    stats.appendChild(li);
+                }
+
+                // create a image list to load                
+                var dogs = document.getElementById('dogs'),
+                    list = dogs.getElementsByTagName('li'),
+                    images = [];
+                for (var i = 0, len = list.length; i < len; i++) {
+                    images[i] = {
+                        src: 'img/' + list[i].id + '.jpg',
+                        id: 'dog' + (i + 1)
+                    }
+                }
+
+                // load images
+                var loader = new BulkImageLoader(images);
+                loader.load({
+                    onLoad: function(image, id) {
+                        dump(id + " loaded.");
+                    },
+                    onError: function(image, id) {
+                        dump("failed to load " + image.src);
+                    },
+                    onComplete: function(results) {
+                        dump("all images have been loaded.");
+                        dump("[Results]----------------------------------------");
+                        for (var i = 0, len = results.length; i < len; i++) {
+                            var result = results[i];
+                            list[i].appendChild(result.image);
+                            dump("src:" + result.src + ", result:" + result.status);
+                        }
+                    },
+                    maxConnections: 3,
+                    preventCache: false
+                });
+                
+            }());
+        </script>
+    </body>
+</html>
